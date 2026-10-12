@@ -3,9 +3,7 @@
 
 > Can seven bean varieties be sorted automatically from geometric measurements alone, and how far can a
 > classic linear method go against modern classifiers?
-
-**Status:** Day 1 of 5 complete (from-scratch implementation + validation). See the [roadmap](#roadmap).
-
+> 
 ---
 
 ## Why this project
@@ -17,7 +15,7 @@ QDA, logistic regression, SVM and random forest.
 **Dataset:** [UCI Dry Bean](https://archive.ics.uci.edu/dataset/602/dry+bean+dataset), 13,611 beans,
 16 shape features extracted from images, 7 classes. Real-world framing: automated seed quality sorting.
 
-## Highlights (Day 1)
+## Highlights
 - Pure-NumPy `FisherLDA` with `fit`, `transform`, `predict`, `predict_proba`, `decision_function`
 - Numerically stable solver (whitening + symmetric eigendecomposition; no explicit matrix inverse)
 - Handles collinear features by discarding null directions of the within-class scatter
@@ -96,22 +94,9 @@ dry-bean-lda/
 
 ![LD1 vs LD2](reports/figures/day1_ld1_ld2.png)
 
-_Run the Day 1 notebook, paste your real numbers, and keep the figure it saves._
-
-### Benchmark, assumptions, interpretation
-_Added in Days 2-4._
-
-## Roadmap
-- [x] **Day 1:** From-scratch LDA, unit tests, validation vs scikit-learn
-- [ ] **Day 2:** EDA and assumption checks (normality, covariance homogeneity, multicollinearity)
-- [ ] **Day 3:** Benchmark vs QDA, shrinkage LDA, logistic regression, SVM, random forest; LDA vs PCA; small-sample study
-- [ ] **Day 4:** Interpretation (feature loadings, decision boundaries) and Streamlit demo
-- [ ] **Day 5:** Polish, deployment, write-up
+_Run the code, paste your real numbers, and keep the figure it saves._
 
 ## Reference
 Koklu, M. & Ozkan, I.A. (2020). *Multiclass classification of dry beans using computer vision and machine
 learning techniques.* Computers and Electronics in Agriculture, 174, 105507.
 Fisher, R.A. (1936). *The use of multiple measurements in taxonomic problems.* Annals of Eugenics, 7(2), 179-188.
-
-## License
-MIT
