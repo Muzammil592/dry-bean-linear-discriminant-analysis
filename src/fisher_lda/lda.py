@@ -14,9 +14,10 @@ numerically more stable than forming inv(S_W) @ S_B explicitly.
 from __future__ import annotations
 
 import numpy as np
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 
 
-class FisherLDA:
+class FisherLDA(ClassifierMixin, TransformerMixin, BaseEstimator):
     """Linear Discriminant Analysis.
 
     Parameters
@@ -48,6 +49,7 @@ class FisherLDA:
         X = np.asarray(X, dtype=float)
         y = np.asarray(y)
         n, p = X.shape
+        self.n_features_in_ = p
         self.classes_, y_idx = np.unique(y, return_inverse=True)
         K = len(self.classes_)
         if K < 2:

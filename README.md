@@ -4,10 +4,12 @@
 > Can seven bean varieties be sorted automatically from geometric measurements alone, and how far can a
 > classic linear method go against modern classifiers?
 
+**Status:** Day 3 complete (implementation, assumption diagnostics, model benchmark). See the [roadmap](#roadmap).
+
 ---
 
 ## Why this project
-Linear Discriminant Analysis is both a **classifier** and a **supervised dimensionality-reduction** technique,
+Linear Discriminant Analysis is both a **classifier** and a **supervised dimensionality-reduction** technique.
 yet it is usually used as a black box. This project builds it from first principles, verifies it against
 scikit-learn, tests whether its assumptions actually hold on real data, and benchmarks it honestly against
 QDA, logistic regression, SVM and random forest.
@@ -30,6 +32,15 @@ QDA, logistic regression, SVM and random forest.
 - Statistical tests are validated against synthetic data with known ground truth (equal vs unequal covariance,
   normal vs skewed, collinear vs independent)
 - Remedies (power transform, dropping collinear features) compared before and after
+
+**Day 3: benchmark**
+- `FisherLDA` is scikit-learn compatible (`clone`, `Pipeline`, `cross_val_score`), so it is benchmarked side by side
+  with the library implementation
+- Leakage-safe stratified k-fold comparison of LDA, shrinkage LDA, QDA, logistic regression, SVM and random forest
+  on accuracy, balanced accuracy, macro-F1, one-vs-rest ROC-AUC and training time
+- Out-of-fold confusion matrices and a calibration analysis (reliability curves, Expected Calibration Error)
+- LDA vs PCA as dimensionality reducers (2-D projections and downstream accuracy)
+- Small-sample study: accuracy vs training samples per class
 
 ## Method in 60 seconds
 Fisher's criterion looks for directions `w` that maximise between-class scatter relative to within-class scatter:
@@ -60,6 +71,10 @@ X, y = load_dry_bean("data/raw/Dry_Bean_Dataset.xlsx")
 lda = FisherLDA().fit(X, y)
 Z = lda.transform(X)                       # (n, 6) discriminant coordinates
 
+from fisher_lda import benchmark
+summary, raw = benchmark.cross_validate_models(X, y)      # 7 models, stratified 5-fold CV
+summary[["accuracy_mean", "f1_macro_mean", "fit_time_mean"]]
+
 report = assumptions.assumption_report(X, y)
 report["box_m"]                            # equality of covariance matrices
 report["vif"].head()                       # most collinear features
@@ -81,30 +96,14 @@ dry-bean-lda/
 │       ├── lda.py                 # FisherLDA implementation
 │       ├── data.py                # dataset loader
 │       ├── assumptions.py         # normality, covariance, collinearity tests
-│       └── plots.py               # diagnostic plots
+│       ├── plots.py               # diagnostic plots
+│       ├── benchmark.py           # model zoo, CV, calibration, PCA vs LDA, small-sample study
+│       └── benchmark_plots.py     # benchmark plots
 └── tests/
     ├── test_lda.py
-    └── test_assumptions.py
+    ├── test_assumptions.py
+    └── test_benchmark.py
 ```
-
-## Results
-
-### Validation against scikit-learn (Day 1)
-| Check | Result |
-|---|---|
-| Projection match (up to sign) | _fill in: max abs diff_ |
-| Prediction agreement | _fill in_ |
-| Test accuracy (ours / sklearn) | _fill in_ |
-
-### Assumption diagnostics (Day 2)
-| Assumption | Test | Finding on Dry Bean |
-|---|---|---|
-| Normality within classes | Shapiro-Wilk, skew, Mardia | _fill in_ |
-| Equal covariance | Box's M, relative covariance distance | _fill in_ |
-| Low collinearity | VIF, condition number | _fill in_ |
-| Remedy effect | Power transform / feature drop, 5-fold CV | _fill in_ |
-
-**Takeaway:** _one or two sentences on which assumptions fail and what that implies for Day 3 (e.g. QDA or shrinkage)._
 
 ## Reference
 Koklu, M. & Ozkan, I.A. (2020). *Multiclass classification of dry beans using computer vision and machine
